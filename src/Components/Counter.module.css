@@ -1,0 +1,13 @@
+.counter {
+    padding: 10px 50px;
+    border: 2px solid darkslategray;
+    border-radius: 5px;
+    margin: 5px;
+    background-color: darkslategray;
+    color: antiquewhite;
+    font-size: 40px;
+}
+
+.red {
+    color: red;
+}
