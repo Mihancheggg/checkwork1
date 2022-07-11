@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Counter from './Components/Counter';
 import Button from './Components/Button';
@@ -6,17 +6,29 @@ import {Input} from './Components/Input';
 
 function App() {
 
-    const [start, setStart] = useState<number>(0);
+    const [start, setStart] = useState<number>( 0);
     const [max, setMax] = useState<number>(10);
     const [startValue, setStartValue] = useState<number>(start)
     const [maxValue, setMaxValue] = useState<number>(max)
 
     const [count, setCount] = useState<number>(start)
 
+    useEffect(() => {
+        getCurrentFromLocalStorage();
+        getStartFromLocalStorage();
+        getMaxFromLocalStorage()
+    }, [])
+
+    useEffect(()=> {
+        localStorage.setItem('currentValue', JSON.stringify(count))
+        localStorage.setItem('startValue', JSON.stringify(start))
+        localStorage.setItem('maxValue', JSON.stringify(max))
+    }, [count, start, max])
+
+
     const increaseFunc = () => {
         if (count < max) {
             setCount(count + 1)
-            setValuesToLocalStorage()
         }
     }
 
@@ -33,16 +45,13 @@ function App() {
     }
 
     const setStartAndMax = () => {
-        setStart(startValue)
-        setMax(maxValue)
-        setCount(startValue)
-        setValuesToLocalStorage()
-    }
-
-    const setValuesToLocalStorage = () => {
-        localStorage.setItem('currentValue', JSON.stringify(count))
-        localStorage.setItem('startValue', JSON.stringify(start))
-        localStorage.setItem('maxValue', JSON.stringify(max))
+        setStart(startValue) // start = startValue
+        setMax(maxValue)  // max = maxValue
+        setCount(startValue) //count = startValue
+        // setValuesToLocalStorage() // не успевает
+        // localStorage.setItem('currentValue', JSON.stringify(startValue))
+        // localStorage.setItem('startValue', JSON.stringify(startValue))
+        // localStorage.setItem('maxValue', JSON.stringify(maxValue))
     }
 
     const getCurrentFromLocalStorage = () => {
@@ -56,6 +65,7 @@ function App() {
         let startFromLocal = localStorage.getItem('startValue')
         if (startFromLocal) {
             setStart(JSON.parse(startFromLocal))
+            setStartValue(JSON.parse(startFromLocal))
         }
     }
 
@@ -63,6 +73,7 @@ function App() {
         let maxFromLocal = localStorage.getItem('maxValue')
         if (maxFromLocal) {
             setMax(JSON.parse(maxFromLocal))
+            setMaxValue(JSON.parse(maxFromLocal))
         }
     }
 
@@ -73,7 +84,9 @@ function App() {
                     <Input title={'Start value: '} value={startValue} onChange={changeStartValue}/>
                     <Input title={'Max value: '} value={maxValue} onChange={changeMaxValue}/>
                 </div>
-                <Button disabled={startValue >= maxValue || startValue < 0 || (startValue === start && maxValue === max)} name={'Set'} callback={setStartAndMax}/>
+                <Button
+                    disabled={startValue >= maxValue || startValue < 0 || (startValue === start && maxValue === max)}
+                    name={'Set'} callback={setStartAndMax}/>
             </div>
             <div className="App">
                 {(startValue < maxValue && startValue >= 0) ? <Counter max={max} count={count}/> :
